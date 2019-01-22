@@ -1,6 +1,7 @@
 package com.example.mayukh.uberclone;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import com.parse.LogInCallback;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
@@ -30,7 +32,13 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                         if(user != null && e == null){
                             FancyToast.makeText(SignUp.this,"Anonymous session started as "+edtUserChoice.getText().toString(),FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
                             user.put("as",edtUserChoice.getText().toString());
-                            user.saveInBackground();
+                            user.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    transitionToPassengerActivity();
+                                }
+                            });
+
                         }
                         else
                             FancyToast.makeText(SignUp.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
@@ -69,7 +77,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         edtUserChoice = findViewById(R.id.edtUserChoice);
 
         if(ParseUser.getCurrentUser() != null){
-            ParseUser.logOut();
+            //ParseUser.logOut();
+            transitionToPassengerActivity();
         }
         btnOneTimeLogin.setOnClickListener(this);
         btnSignUpLogIn.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +114,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                                 if(e == null)
                                 {
                                     FancyToast.makeText(SignUp.this,"User signed up as "+appUser.get("as"),FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
+                                    transitionToPassengerActivity();
                                 }
                                 else
                                     FancyToast.makeText(SignUp.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
@@ -130,6 +140,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                             public void done(ParseUser user, ParseException e) {
                                 if(user != null && e == null){
                                     FancyToast.makeText(SignUp.this,"User logged in ",FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
+                                    transitionToPassengerActivity();
                                 }
                                 else
                                     FancyToast.makeText(SignUp.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
@@ -169,5 +180,13 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+    private void transitionToPassengerActivity(){
+        if(ParseUser.getCurrentUser() != null){
+            if(ParseUser.getCurrentUser().get("as").equals("Passenger")){
+                Intent intent = new Intent(SignUp.this,PassengerActivity.class);
+                startActivity(intent);
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.mayukh.uberclone;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -61,6 +63,22 @@ public class PassengerActivity extends FragmentActivity implements OnMapReadyCal
                     isUberCancelled = false;
                     btnRequestCar.setText("CANCEL YOUR UBER ORDER");
                 }
+            }
+        });
+
+        findViewById(R.id.btnLogOutFromPassengerActivity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseUser.logOutInBackground(new LogOutCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e == null){
+                            startActivity(new Intent(PassengerActivity.this,MainActivity.class));
+                            finish();
+
+                        }
+                    }
+                });
             }
         });
     }
@@ -196,5 +214,6 @@ public class PassengerActivity extends FragmentActivity implements OnMapReadyCal
             });
         }
     }
+
 }
 

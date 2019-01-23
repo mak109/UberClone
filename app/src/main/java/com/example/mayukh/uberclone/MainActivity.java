@@ -19,7 +19,7 @@ import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
-public class SignUp extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
@@ -30,24 +30,25 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void done(ParseUser user, ParseException e) {
                         if(user != null && e == null){
-                            FancyToast.makeText(SignUp.this,"Anonymous session started as "+edtUserChoice.getText().toString(),FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
+                            FancyToast.makeText(MainActivity.this,"Anonymous session started as "+edtUserChoice.getText().toString(),FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
                             user.put("as",edtUserChoice.getText().toString());
                             user.saveInBackground(new SaveCallback() {
                                 @Override
                                 public void done(ParseException e) {
                                     transitionToPassengerActivity();
+                                    transitionToDriverRequestListActivity();
                                 }
                             });
 
                         }
                         else
-                            FancyToast.makeText(SignUp.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
+                            FancyToast.makeText(MainActivity.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
                     }
                 });
             }
         }
         else
-            FancyToast.makeText(SignUp.this,"Are you a driver or passenger ?",FancyToast.LENGTH_SHORT,FancyToast.CONFUSING,true).show();
+            FancyToast.makeText(MainActivity.this,"Are you a driver or passenger ?",FancyToast.LENGTH_SHORT,FancyToast.CONFUSING,true).show();
 
     }
 
@@ -62,7 +63,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_main);
 
         state = State.SIGNUP;
 
@@ -79,6 +80,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         if(ParseUser.getCurrentUser() != null){
             //ParseUser.logOut();
             transitionToPassengerActivity();
+            transitionToDriverRequestListActivity();
         }
         btnOneTimeLogin.setOnClickListener(this);
         btnSignUpLogIn.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +89,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
                 if(state == State.SIGNUP){
                     if(rdbPassenger.isChecked() == false && rdbDriver.isChecked() == false){
-                        FancyToast.makeText(SignUp.this,"Are you a driver or passenger ?",FancyToast.LENGTH_SHORT,FancyToast.CONFUSING,true).show();
+                        FancyToast.makeText(MainActivity.this,"Are you a driver or passenger ?",FancyToast.LENGTH_SHORT,FancyToast.CONFUSING,true).show();
                         return;
                     }
                     else
@@ -102,10 +104,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                             appUser.put("as","Driver");
                         }
                         if(edtUserName.getText().toString().equals("") || edtPassword.getText().toString().equals("")){
-                            FancyToast.makeText(SignUp.this,"Username/Password required",FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
+                            FancyToast.makeText(MainActivity.this,"Username/Password required",FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
                             return;
                         }
-                        final ProgressDialog progressDialog = new ProgressDialog(SignUp.this);
+                        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
                         progressDialog.setMessage("Signing Up....");
                         progressDialog.show();
                         appUser.signUpInBackground(new SignUpCallback() {
@@ -113,11 +115,12 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                             public void done(ParseException e) {
                                 if(e == null)
                                 {
-                                    FancyToast.makeText(SignUp.this,"User signed up as "+appUser.get("as"),FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
+                                    FancyToast.makeText(MainActivity.this,"User signed up as "+appUser.get("as"),FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
                                     transitionToPassengerActivity();
+                                    transitionToDriverRequestListActivity();
                                 }
                                 else
-                                    FancyToast.makeText(SignUp.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
+                                    FancyToast.makeText(MainActivity.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
                                 progressDialog.dismiss();
                             }
                         });
@@ -127,23 +130,24 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 else
                 {
                     if(edtUserName.getText().toString().equals("") || edtPassword.getText().toString().equals("")) {
-                        FancyToast.makeText(SignUp.this, "Username/Password required", FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show();
+                        FancyToast.makeText(MainActivity.this, "Username/Password required", FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show();
                         return;
                     }
                     else
                     {
-                        final ProgressDialog progressDialog = new ProgressDialog(SignUp.this);
+                        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
                         progressDialog.setMessage("Logging in....");
                         progressDialog.show();
                         ParseUser.logInInBackground(edtUserName.getText().toString(), edtPassword.getText().toString(), new LogInCallback() {
                             @Override
                             public void done(ParseUser user, ParseException e) {
                                 if(user != null && e == null){
-                                    FancyToast.makeText(SignUp.this,"User logged in ",FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
+                                    FancyToast.makeText(MainActivity.this,"User logged in ",FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
                                     transitionToPassengerActivity();
+                                    transitionToDriverRequestListActivity();
                                 }
                                 else
-                                    FancyToast.makeText(SignUp.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
+                                    FancyToast.makeText(MainActivity.this,e.getMessage(),FancyToast.LENGTH_SHORT,FancyToast.ERROR,true).show();
                                 progressDialog.dismiss();
                             }
                         });
@@ -157,7 +161,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.my_menu,menu);
+        getMenuInflater().inflate(R.menu.menu_activity_main,menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -184,9 +188,19 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private void transitionToPassengerActivity(){
         if(ParseUser.getCurrentUser() != null){
             if(ParseUser.getCurrentUser().get("as").equals("Passenger")){
-                Intent intent = new Intent(SignUp.this,PassengerActivity.class);
+                Intent intent = new Intent(MainActivity.this,PassengerActivity.class);
                 startActivity(intent);
             }
         }
+    }
+    private void transitionToDriverRequestListActivity(){
+
+        if(ParseUser.getCurrentUser() != null){
+            if(ParseUser.getCurrentUser().get("as").equals("Driver")){
+                Intent intent= new Intent(MainActivity.this,DriversRequestList.class);
+                startActivity(intent);
+            }
+        }
+
     }
 }

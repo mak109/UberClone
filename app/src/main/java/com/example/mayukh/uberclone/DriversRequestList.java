@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
@@ -28,6 +29,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 import java.util.ArrayList;
@@ -63,28 +65,7 @@ public class DriversRequestList extends AppCompatActivity implements View.OnClic
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
         if (Build.VERSION.SDK_INT < 23 || ContextCompat.checkSelfPermission(DriversRequestList.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-
-                }
-            };
+            initializeLocationListener();
         }
 
     }
@@ -134,6 +115,7 @@ public class DriversRequestList extends AppCompatActivity implements View.OnClic
 
     private void updateRequestList(Location driverLocation) {
         if(driverLocation != null){
+            saveDriverLocationToParse(driverLocation);
 
             final ParseGeoPoint driverCurrentLocation = new ParseGeoPoint(driverLocation.getLatitude(),driverLocation.getLongitude());
 
@@ -187,6 +169,7 @@ public class DriversRequestList extends AppCompatActivity implements View.OnClic
 
         if (requestCode == 1000 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(DriversRequestList.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                initializeLocationListener();
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                Location currentDriverLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 updateRequestList(currentDriverLocation);
@@ -211,5 +194,44 @@ public class DriversRequestList extends AppCompatActivity implements View.OnClic
             }
         }
 
+    }
+
+    private void initializeLocationListener(){
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+    }
+    private void saveDriverLocationToParse(Location location)
+    {
+        ParseUser driver = ParseUser.getCurrentUser();
+        ParseGeoPoint driverLocation = new ParseGeoPoint(location.getLatitude(),location.getLongitude());
+        driver.put("driverLocation",driverLocation);
+        driver.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null){
+                    Toast.makeText(DriversRequestList.this,"Location Saved",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

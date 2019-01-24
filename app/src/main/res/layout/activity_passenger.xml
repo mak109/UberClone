@@ -6,24 +6,36 @@
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="500dp"
-    tools:context=".PassengerActivity" >
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        tools:context=".PassengerActivity">
 
 
     </fragment>
+
     <Button
-    android:id="@+id/btnRequestCar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Request a Car" />
+        android:id="@+id/btnRequestCar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Request a Car" />
+
+    <Button
+        android:id="@+id/btnBeep"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Beep BEEP!" />
+
     <Button
         android:id="@+id/btnLogOutFromPassengerActivity"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:text="Log Out " />
 </LinearLayout>
